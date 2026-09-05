@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, Pressable, Linking, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, Pressable, Linking, Alert, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, radius, spacing, typography } from '../theme/theme';
 import { contactInfo } from '../data/user';
+import logo from '../../assets/logo.png';
 
 const DEFAULT_GREETING = "Hi Explosher! I'd like to plan a kosher trip.";
 
@@ -32,9 +33,7 @@ export default function ContactScreen() {
         <Text style={styles.subtitle}>We're here to help plan your perfect kosher journey</Text>
 
         <View style={styles.companyBanner}>
-          <View style={styles.logoCircle}>
-            <Ionicons name="earth" size={22} color="#fff" />
-          </View>
+          <Image source={logo} style={styles.logoCircle} />
           <View>
             <Text style={styles.companyName}>Explosher AI</Text>
             <Text style={styles.companyTagline}>Kosher Culinary Tourism Experts</Text>
@@ -123,9 +122,6 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: colors.orange,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   companyName: { color: '#fff', fontWeight: '800', fontSize: 16 },
   companyTagline: { color: 'rgba(255,255,255,0.7)', fontSize: 12, marginTop: 2 },

@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, radius, spacing, typography } from '../theme/theme';
 import { currentUser } from '../data/user';
+import logo from '../../assets/logo.png';
 
 export default function ProfileScreen() {
   const initial = currentUser.name.trim()[0]?.toUpperCase() ?? 'U';
@@ -55,9 +56,7 @@ export default function ProfileScreen() {
         </View>
 
         <View style={styles.footerCard}>
-          <View style={styles.footerLogo}>
-            <Ionicons name="earth" size={20} color="#fff" />
-          </View>
+          <Image source={logo} style={styles.footerLogo} />
           <View>
             <Text style={styles.footerTitle}>Explosher AI</Text>
             <Text style={styles.footerSubtitle}>Kosher Culinary Tourism · v1.0</Text>
@@ -111,9 +110,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: colors.orange,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   footerTitle: { ...typography.h3, color: colors.text },
   footerSubtitle: { ...typography.small, color: colors.textMuted, marginTop: 1 },

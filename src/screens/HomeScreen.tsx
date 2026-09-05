@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, Pressable } from 'react-native';
+import logo from '../../assets/logo.png';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
@@ -13,7 +14,6 @@ import { RootTabParamList } from '../navigation/types';
 
 export default function HomeScreen() {
   const navigation = useNavigation<BottomTabNavigationProp<RootTabParamList>>();
-  const firstName = currentUser.name.split(' ')[0];
 
   return (
     <ScrollView style={styles.screen} showsVerticalScrollIndicator={false}>
@@ -24,9 +24,7 @@ export default function HomeScreen() {
               <Text style={styles.welcome}>Welcome back,</Text>
               <Text style={styles.name}>{currentUser.name}</Text>
             </View>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>{firstName[0]}</Text>
-            </View>
+            <Image source={logo} style={styles.logoBadge} />
           </View>
 
           <View style={styles.promoCard}>
@@ -108,15 +106,11 @@ const styles = StyleSheet.create({
   },
   welcome: { color: 'rgba(255,255,255,0.7)', fontSize: 14 },
   name: { color: '#fff', fontSize: 22, fontWeight: '800', marginTop: 2 },
-  avatar: {
+  logoBadge: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: colors.orange,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
-  avatarText: { color: '#fff', fontWeight: '800', fontSize: 16 },
   promoCard: {
     flexDirection: 'row',
     gap: spacing.sm,
