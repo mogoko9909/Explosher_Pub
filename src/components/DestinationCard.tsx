@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     elevation: 2,
   },
-  image: { width: '100%', height: 130 },
+  image: { width: '100%', height: 130, backgroundColor: colors.pillBg },
   ratingBadge: { position: 'absolute', top: spacing.sm, right: spacing.sm },
   body: { padding: spacing.sm },
   city: { ...typography.h3, color: colors.text },

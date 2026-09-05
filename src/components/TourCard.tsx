@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     elevation: 2,
   },
-  image: { width: '100%', height: 150 },
+  image: { width: '100%', height: 150, backgroundColor: colors.pillBg },
   badge: {
     position: 'absolute',
     top: spacing.sm,

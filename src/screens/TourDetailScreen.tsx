@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -33,6 +34,7 @@ export default function TourDetailScreen() {
     <ScrollView style={styles.screen} showsVerticalScrollIndicator={false}>
       <View>
         <Image source={{ uri: tour.image }} style={styles.hero} />
+        <LinearGradient colors={['transparent', 'rgba(15,27,61,0.85)']} style={styles.heroScrim} />
         <SafeAreaView edges={['top']} style={styles.heroOverlay}>
           <Pressable style={styles.backButton} onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={20} color={colors.text} />
@@ -97,7 +99,8 @@ export default function TourDetailScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background },
-  hero: { width: '100%', height: 260 },
+  hero: { width: '100%', height: 260, backgroundColor: colors.navy },
+  heroScrim: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 140 },
   heroOverlay: { position: 'absolute', top: 0, left: 0, right: 0, paddingHorizontal: spacing.md },
   backButton: {
     width: 36,
