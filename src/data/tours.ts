@@ -1,0 +1,210 @@
+import { Tour } from '../types';
+
+export const tours: Tour[] = [
+  {
+    id: 'athens-greek-islands',
+    title: 'Athens & Greek Islands Kosher Tour',
+    city: 'Athens',
+    country: 'Greece',
+    status: 'upcoming',
+    image: 'https://images.unsplash.com/photo-1555993539-1732b0258235?w=1200&q=80',
+    startDate: '2026-07-20',
+    endDate: '2026-07-27',
+    travelers: 16,
+    overview:
+      'A 7-day kosher culinary adventure through Athens and the surrounding region. Discover Sephardic Jewish history, Glatt Kosher restaurants in Psiri, and iconic Greek landmarks.',
+    advisorNote:
+      'All dining venues are Glatt Kosher, certified by Chabad of Greece (Rabbi Mendel Hendel). A special Shabbat experience in the Psiri neighborhood is included.',
+    coordinates: { latitude: 37.9838, longitude: 23.7275 },
+    itinerary: [
+      {
+        id: 'day-1',
+        dayNumber: 1,
+        title: 'Arrival & Psiri Welcome Dinner',
+        date: 'Monday, Jul 20',
+        stops: [
+          {
+            id: 'd1-1',
+            time: '15:00',
+            title: 'Arrival & Hotel Check-in',
+            location: 'Hotel, Athens City Center',
+            type: 'hotel',
+          },
+          {
+            id: 'd1-2',
+            time: '19:30',
+            title: 'Welcome Dinner at Gostijo Kosher Restaurant',
+            location: 'Esopou 10, Psiri, Athens',
+            type: 'food',
+            kosherBadge: 'Glatt Kosher – Chabad of Greece',
+            tag: 'Sephardic Mediterranean cuisine',
+          },
+        ],
+      },
+      {
+        id: 'day-2',
+        dayNumber: 2,
+        title: 'Acropolis & Kosher Café Experience',
+        date: 'Tuesday, Jul 21',
+        stops: [
+          {
+            id: 'd2-1',
+            time: '08:30',
+            title: 'Acropolis & Parthenon',
+            location: 'Acropolis Hill, Athens',
+            type: 'sight',
+            note: 'Early morning to beat the heat',
+          },
+          {
+            id: 'd2-2',
+            time: '11:30',
+            title: 'Coffee & Pastries at Parakalo',
+            location: 'Mikonos 18, Psiri, Athens',
+            type: 'food',
+            kosherBadge: 'Glatt Kosher Dairy – Chabad of Greece',
+            tag: 'Kosher dairy café',
+          },
+          {
+            id: 'd2-3',
+            time: '13:30',
+            title: 'Acropolis Museum',
+            location: 'Dionysiou Areopagitou 15, Athens',
+            type: 'sight',
+          },
+          {
+            id: 'd2-4',
+            time: '19:30',
+            title: 'Dinner at Gostijo',
+            location: 'Psiri, Athens',
+            type: 'food',
+            kosherBadge: 'Glatt Kosher – Chabad of Greece',
+          },
+        ],
+      },
+      {
+        id: 'day-3',
+        dayNumber: 3,
+        title: 'Jewish History & Monastiraki',
+        date: 'Wednesday, Jul 22',
+        stops: [
+          {
+            id: 'd3-1',
+            time: '09:00',
+            title: 'Jewish Museum of Greece',
+            location: 'Nikis 39, Athens',
+            type: 'sight',
+          },
+          {
+            id: 'd3-2',
+            time: '13:00',
+            title: 'Monastiraki Flea Market',
+            location: 'Monastiraki Square, Athens',
+            type: 'sight',
+          },
+        ],
+      },
+      {
+        id: 'day-4',
+        dayNumber: 4,
+        title: 'Shabbat in Athens',
+        date: 'Friday, Jul 24',
+        stops: [
+          {
+            id: 'd4-1',
+            time: '18:00',
+            title: 'Kabbalat Shabbat at Chabad of Greece',
+            location: 'Psiri, Athens',
+            type: 'sight',
+          },
+          {
+            id: 'd4-2',
+            time: '19:30',
+            title: 'Shabbat Dinner',
+            location: 'Psiri, Athens',
+            type: 'food',
+            kosherBadge: 'Glatt Kosher – Chabad of Greece',
+          },
+        ],
+      },
+      {
+        id: 'day-5',
+        dayNumber: 5,
+        title: 'Cape Sounion Day Trip',
+        date: 'Saturday, Jul 25',
+        stops: [
+          {
+            id: 'd5-1',
+            time: '10:00',
+            title: 'Temple of Poseidon',
+            location: 'Cape Sounion',
+            type: 'sight',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'prague-kosher-culinary',
+    title: 'Prague Kosher Culinary Experience',
+    city: 'Prague',
+    country: 'Czech Republic',
+    status: 'upcoming',
+    image: 'https://images.unsplash.com/photo-1541849546-216549ae216d?w=1200&q=80',
+    startDate: '2026-06-10',
+    endDate: '2026-06-16',
+    travelers: 12,
+    overview:
+      'The City of a Hundred Spires offers a remarkably rich Jewish heritage, stunning medieval architecture, and a growing kosher dining scene.',
+    advisorNote:
+      'All dining venues are Glatt Kosher, certified by the Chabad of Prague. Guided tour of the historic Jewish Quarter (Josefov) included.',
+    coordinates: { latitude: 50.0755, longitude: 14.4378 },
+    itinerary: [
+      {
+        id: 'p-day-1',
+        dayNumber: 1,
+        title: 'Arrival & Old Town Welcome',
+        date: 'Wednesday, Jun 10',
+        stops: [
+          {
+            id: 'p1-1',
+            time: '14:00',
+            title: 'Arrival & Hotel Check-in',
+            location: 'Hotel, Prague Old Town',
+            type: 'hotel',
+          },
+          {
+            id: 'p1-2',
+            time: '19:00',
+            title: 'Welcome Dinner',
+            location: 'Josefov, Prague',
+            type: 'food',
+            kosherBadge: 'Glatt Kosher – Chabad of Prague',
+          },
+        ],
+      },
+      {
+        id: 'p-day-2',
+        dayNumber: 2,
+        title: 'Jewish Quarter (Josefov)',
+        date: 'Thursday, Jun 11',
+        stops: [
+          {
+            id: 'p2-1',
+            time: '09:00',
+            title: 'Old Jewish Cemetery & Pinkas Synagogue',
+            location: 'Josefov, Prague',
+            type: 'sight',
+          },
+          {
+            id: 'p2-2',
+            time: '13:00',
+            title: 'Lunch at King Solomon Restaurant',
+            location: 'Siroka 8, Prague',
+            type: 'food',
+            kosherBadge: 'Glatt Kosher',
+          },
+        ],
+      },
+    ],
+  },
+];
