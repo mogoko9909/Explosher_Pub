@@ -1,8 +1,18 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable, LayoutAnimation, Platform, UIManager } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { ItineraryDay, ItineraryStopType } from '../types';
+import { ItineraryDay, ItineraryStopType, KosherLevel } from '../types';
 import { colors, radius, spacing, typography } from '../theme/theme';
+
+const KOSHER_LABEL: Record<KosherLevel, string> = {
+  glatt: 'Glatt Kosher',
+  supervised: 'Kosher Supervised',
+};
+
+const KOSHER_COLOR: Record<KosherLevel, { bg: string; text: string }> = {
+  glatt: { bg: '#E3F5E9', text: '#1E7A46' },
+  supervised: { bg: colors.chipBg, text: colors.orangeDark },
+};
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -68,13 +78,22 @@ export default function ItineraryDayCard({ day, defaultOpen = false }: { day: It
                   <Text style={styles.stopLocation}>{stop.location}</Text>
                 </View>
                 {stop.note && <Text style={styles.stopNote}>{stop.note}</Text>}
-                {stop.kosherBadge && (
-                  <View style={styles.kosherBadge}>
-                    <Ionicons name="checkmark" size={11} color={colors.orangeDark} />
-                    <Text style={styles.kosherBadgeText}>{stop.kosherBadge}</Text>
+                {stop.kosherLevel && (
+                  <View
+                    style={[styles.kosherBadge, { backgroundColor: KOSHER_COLOR[stop.kosherLevel].bg }]}
+                  >
+                    <Ionicons name="checkmark-circle" size={12} color={KOSHER_COLOR[stop.kosherLevel].text} />
+                    <Text style={[styles.kosherBadgeText, { color: KOSHER_COLOR[stop.kosherLevel].text }]}>
+                      {KOSHER_LABEL[stop.kosherLevel]}
+                    </Text>
                   </View>
                 )}
-                {stop.tag && <Text style={styles.stopTag}>{stop.tag}</Text>}
+                {stop.kosherAuthority && <Text style={styles.stopAuthority}>{stop.kosherAuthority}</Text>}
+                {(stop.tag || stop.priceRange) && (
+                  <Text style={styles.stopTag}>
+                    {[stop.tag, stop.priceRange].filter(Boolean).join(' · ')}
+                  </Text>
+                )}
               </View>
             </View>
           ))}
@@ -130,6 +149,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     marginTop: 6,
   },
-  kosherBadgeText: { fontSize: 11, fontWeight: '700', color: colors.orangeDark },
-  stopTag: { ...typography.small, color: colors.textMuted, marginTop: 4 },
+  kosherBadgeText: { fontSize: 11, fontWeight: '700' },
+  stopAuthority: { ...typography.small, color: colors.textMuted, marginTop: 4 },
+  stopTag: { ...typography.small, color: colors.textMuted, marginTop: 2 },
 });

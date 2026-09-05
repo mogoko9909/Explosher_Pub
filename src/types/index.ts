@@ -9,6 +9,11 @@ export type Destination = {
 
 export type ItineraryStopType = 'sight' | 'food' | 'hotel' | 'transport';
 
+// Only 'glatt' and 'supervised' are genuinely kosher-certified. A food stop
+// in an itinerary should never use anything else — vegetarian/vegan menus
+// are not a substitute for supervision.
+export type KosherLevel = 'glatt' | 'supervised';
+
 export type ItineraryStop = {
   id: string;
   time: string;
@@ -16,7 +21,9 @@ export type ItineraryStop = {
   location: string;
   type: ItineraryStopType;
   note?: string;
-  kosherBadge?: string;
+  kosherLevel?: KosherLevel;
+  kosherAuthority?: string;
+  priceRange?: string;
   tag?: string;
 };
 

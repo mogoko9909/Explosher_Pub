@@ -7,11 +7,12 @@ AI-powered kosher travel app — plan, browse, and manage tailor-made kosher cul
 - **Home** — personalized greeting, AI travel promo, featured destinations carousel, stats, CTA banner.
 - **My Tours** — Upcoming / Active / Completed tabs with tour cards.
 - **Tour Detail** — hero image, trip info, overview, advisor notes, and a day-by-day expandable itinerary with kosher-certification badges.
-- **Map** — map view with a pin per tour destination, plus a linked list of tours below.
+- **Map** — free map (Leaflet + OpenStreetMap, no API key or billing account) with a pin per tour destination, plus a linked list of tours below.
 - **Contact** — WhatsApp deep-link composer, phone/availability info, quick-message chips.
-- **Profile** — account details and app info.
+- **Profile** — account details, sign out, app info.
+- **Login** — sign in / sign up gate shown before the app, with a "Continue with Google" placeholder.
 
-All content currently comes from local mock data in `src/data/` (destinations, tours, user, contact info) — swap these for real API calls when a backend is ready.
+All content currently comes from local mock data in `src/data/` (destinations, tours, user, contact info) — swap these for real API calls when a backend is ready. Tour itineraries (Athens & Prague) are built from real kosher-certified venues — see **Tour data** below.
 
 ## Running on Android
 
@@ -58,15 +59,34 @@ Bump `expo.version` in `app.json` whenever you make a **native** change (new nat
 
 ## Before shipping
 
-- **Google Maps API key**: the Map screen uses `react-native-maps`, which needs a Google Maps API key for Android in production. Add it to `app.json` under `expo.android.config.googleMaps.apiKey`.
 - **Backend**: hook up real destinations/tours/profile data and the WhatsApp/phone contact numbers to your production values in `src/data/`.
+
+## Map (free, no API key)
+
+The Map screen renders `react-native-webview` loading Leaflet + OpenStreetMap tiles — no Google Maps API key, no billing account, nothing to configure. (Google Maps Platform does give a monthly free credit, but requires a credit card on file even to use it; this avoids that entirely, and it's also what the app's original web version used.) `src/components/LeafletMap.tsx` builds the HTML/JS; `MapScreen.tsx` (native) uses it, `MapScreen.web.tsx` keeps the destination-list fallback for web builds.
+
+## Login (mock only — read before relying on it)
+
+`src/context/AuthContext.tsx` gates the app behind `LoginScreen`. **This is not real authentication yet**: it accepts any non-empty email/password, stores a session flag on-device (AsyncStorage), and does not verify identity or paying-user status against any server. "Continue with Google" is a placeholder (shows a "coming soon" alert). Anyone with the app can create a "session" by typing anything into the form.
+
+To make this real and actually restrict the app to paying Explosher users, wire up a real backend — Firebase Auth is the natural fit (free tier, handles email/password + Google sign-in). That requires:
+1. A Firebase project (you create it, free) — give me its config.
+2. For Google sign-in specifically: registering this app's Android package name (`com.explosher.app`) and SHA-1 signing fingerprint in the Firebase/Google Cloud console.
+3. Some way to mark a user as "paying" (a Firestore field, a subscription check via RevenueCat, etc.) — worth deciding based on how you actually sell access.
+
+Ask any time you're ready to do this and have a Firebase project — it's a native-level change, so it'll need a fresh APK build (not just an OTA update) once wired up.
+
+## Tour data (real venues)
+
+Athens and Prague itineraries are built from real, verified kosher venue lists (restaurant name, cuisine, address, kosher certification, price range — see `src/data/restaurants.ts`). Only genuinely kosher-certified venues (`glatt` or `supervised` in `src/types/index.ts`'s `KosherLevel`) are used for meal stops — vegetarian/vegan-only or uncertified venues from the source lists are intentionally excluded from meals, since "vegetarian" is not a substitute for kosher supervision. Sightseeing stops (Acropolis, Prague Castle, Jewish Quarter sites, day trips, etc.) are real, well-known landmarks in each city. Update `src/data/tours.ts` / `restaurants.ts` directly, or swap for a real backend later.
 
 ## Project structure
 
 ```
 src/
-  components/   Reusable UI (cards, itinerary accordion, star rating)
-  data/         Mock data (destinations, tours, user, contact info)
+  components/   Reusable UI (cards, itinerary accordion, star rating, Leaflet map)
+  context/      AuthContext (mock login/session gate)
+  data/         Content data (destinations, tours, restaurants, user, contact info)
   navigation/   Bottom tabs + per-tab stacks
   screens/      One file per screen
   theme/        Colors, spacing, typography tokens

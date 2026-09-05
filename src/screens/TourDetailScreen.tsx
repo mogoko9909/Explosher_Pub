@@ -50,29 +50,31 @@ export default function TourDetailScreen() {
 
       <View style={styles.body}>
         <View style={styles.infoCard}>
-          <View style={styles.infoRow}>
+          <View style={[styles.infoRow, styles.infoRowFull]}>
             <Ionicons name="location-outline" size={16} color={colors.textMuted} />
-            <View>
+            <View style={styles.infoTextWrap}>
               <Text style={styles.infoLabel}>Destination</Text>
-              <Text style={styles.infoValue}>
+              <Text style={styles.infoValue} numberOfLines={1}>
                 {tour.city}, {tour.country}
               </Text>
             </View>
           </View>
-          <View style={styles.infoRow}>
-            <Ionicons name="calendar-outline" size={16} color={colors.textMuted} />
-            <View>
-              <Text style={styles.infoLabel}>Dates</Text>
-              <Text style={styles.infoValue}>
-                {formatDateShort(tour.startDate)} - {formatDateShort(tour.endDate)}
-              </Text>
+          <View style={styles.infoCardRow}>
+            <View style={styles.infoRow}>
+              <Ionicons name="calendar-outline" size={16} color={colors.textMuted} />
+              <View style={styles.infoTextWrap}>
+                <Text style={styles.infoLabel}>Dates</Text>
+                <Text style={styles.infoValue} numberOfLines={1}>
+                  {formatDateShort(tour.startDate)} - {formatDateShort(tour.endDate)}
+                </Text>
+              </View>
             </View>
-          </View>
-          <View style={styles.infoRow}>
-            <Ionicons name="people-outline" size={16} color={colors.textMuted} />
-            <View>
-              <Text style={styles.infoLabel}>Travelers</Text>
-              <Text style={styles.infoValue}>{tour.travelers}</Text>
+            <View style={styles.infoRow}>
+              <Ionicons name="people-outline" size={16} color={colors.textMuted} />
+              <View style={styles.infoTextWrap}>
+                <Text style={styles.infoLabel}>Travelers</Text>
+                <Text style={styles.infoValue}>{tour.travelers}</Text>
+              </View>
             </View>
           </View>
         </View>
@@ -127,15 +129,17 @@ const styles = StyleSheet.create({
     backgroundColor: colors.card,
     borderRadius: radius.md,
     padding: spacing.md,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    gap: spacing.sm,
     shadowColor: '#000',
     shadowOpacity: 0.08,
     shadowRadius: 10,
     elevation: 3,
     marginBottom: spacing.lg,
   },
+  infoCardRow: { flexDirection: 'row', justifyContent: 'space-between', gap: spacing.sm },
   infoRow: { flexDirection: 'row', gap: 6, flex: 1 },
+  infoRowFull: { flex: undefined },
+  infoTextWrap: { flexShrink: 1 },
   infoLabel: { ...typography.small, color: colors.textMuted },
   infoValue: { ...typography.h3, fontSize: 13, color: colors.text, marginTop: 1 },
   sectionTitle: { ...typography.h2, color: colors.text, marginBottom: spacing.sm },

@@ -1,13 +1,23 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, Pressable, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, radius, spacing, typography } from '../theme/theme';
 import { currentUser } from '../data/user';
+import { useAuth } from '../context/AuthContext';
 import logo from '../../assets/logo.png';
 
 export default function ProfileScreen() {
+  const { email: sessionEmail, signOut } = useAuth();
+  const email = sessionEmail ?? currentUser.email;
   const initial = currentUser.name.trim()[0]?.toUpperCase() ?? 'U';
+
+  const handleSignOut = () => {
+    Alert.alert('Sign out', 'Are you sure you want to sign out?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Sign Out', style: 'destructive', onPress: signOut },
+    ]);
+  };
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
@@ -20,7 +30,7 @@ export default function ProfileScreen() {
             <Text style={styles.avatarText}>{initial}</Text>
           </View>
           <Text style={styles.name}>{currentUser.name}</Text>
-          <Text style={styles.email}>{currentUser.email}</Text>
+          <Text style={styles.email}>{email}</Text>
         </View>
 
         <View style={styles.card}>
@@ -40,7 +50,7 @@ export default function ProfileScreen() {
             <Ionicons name="mail-outline" size={16} color={colors.textMuted} />
             <View>
               <Text style={styles.label}>Email</Text>
-              <Text style={styles.value}>{currentUser.email}</Text>
+              <Text style={styles.value}>{email}</Text>
             </View>
           </View>
 
@@ -54,6 +64,11 @@ export default function ProfileScreen() {
             </View>
           </View>
         </View>
+
+        <Pressable style={styles.signOutButton} onPress={handleSignOut}>
+          <Ionicons name="log-out-outline" size={18} color="#D6303C" />
+          <Text style={styles.signOutText}>Sign Out</Text>
+        </Pressable>
 
         <View style={styles.footerCard}>
           <Image source={logo} style={styles.footerLogo} />
@@ -100,6 +115,17 @@ const styles = StyleSheet.create({
   divider: { height: 1, backgroundColor: colors.border, alignSelf: 'stretch' },
   label: { ...typography.small, color: colors.textMuted },
   value: { ...typography.h3, fontSize: 14, color: colors.text, marginTop: 1 },
+  signOutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    backgroundColor: colors.card,
+    borderRadius: radius.md,
+    paddingVertical: spacing.md,
+    marginBottom: spacing.md,
+  },
+  signOutText: { color: '#D6303C', fontWeight: '700' },
   footerCard: {
     flexDirection: 'row',
     alignItems: 'center',

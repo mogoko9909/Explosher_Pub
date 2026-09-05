@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import MapView, { Marker } from 'react-native-maps';
+import LeafletMap from '../components/LeafletMap';
 import { colors, radius, spacing, typography } from '../theme/theme';
 import { tours } from '../data/tours';
 import { formatDate } from '../utils/date';
@@ -13,12 +13,13 @@ import { MapStackParamList } from '../navigation/types';
 export default function MapScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<MapStackParamList>>();
 
-  const initialRegion = {
-    latitude: 45,
-    longitude: 15,
-    latitudeDelta: 25,
-    longitudeDelta: 25,
-  };
+  const markers = tours.map((tour) => ({
+    id: tour.id,
+    latitude: tour.coordinates.latitude,
+    longitude: tour.coordinates.longitude,
+    title: tour.title,
+    subtitle: tour.city,
+  }));
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
@@ -28,17 +29,10 @@ export default function MapScreen() {
       </View>
 
       <View style={styles.mapWrap}>
-        <MapView style={styles.map} initialRegion={initialRegion}>
-          {tours.map((tour) => (
-            <Marker
-              key={tour.id}
-              coordinate={tour.coordinates}
-              title={tour.title}
-              description={tour.city}
-              onPress={() => navigation.navigate('TourDetail', { tourId: tour.id })}
-            />
-          ))}
-        </MapView>
+        <LeafletMap
+          markers={markers}
+          onMarkerPress={(id) => navigation.navigate('TourDetail', { tourId: id })}
+        />
       </View>
 
       <ScrollView contentContainerStyle={styles.listContent}>
@@ -79,7 +73,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     ...Platform.select({ android: { elevation: 1 } }),
   },
-  map: { flex: 1 },
   listContent: { padding: spacing.md, gap: spacing.sm },
   tourRow: {
     flexDirection: 'row',
