@@ -24,18 +24,23 @@ Or scan the QR code from `npm start` in the **Expo Go** app on a physical Androi
 
 ### Building a real Android app (APK/AAB)
 
-This project uses [EAS Build](https://docs.expo.dev/build/introduction/):
+This project uses [EAS Build](https://docs.expo.dev/build/introduction/); `eas.json` is already checked in with a `preview` profile that produces an installable **APK** (and a `production` profile for a Play Store **AAB**):
 
 ```bash
 npm install -g eas-cli
-eas login
-eas build --platform android --profile preview   # APK for testing
-eas build --platform android --profile production # AAB for Play Store
+eas login                                          # one-time, needs an expo.dev account (free)
+eas build --platform android --profile preview     # APK for testing/sharing
+eas build --platform android --profile production  # AAB for Play Store
 ```
+
+The first `eas build` also links this project to your Expo account (creates a project id, stored in `app.json` under `extra.eas.projectId` — commit that once it's added).
+
+**Important — a built APK is a snapshot, not a live app.** Code changes made after a build don't appear on an already-installed APK by themselves. Two ways to ship an update:
+- **New APK**: re-run `eas build` and reinstall — required for any native-level change (new native dependency, app icon, permissions, `app.json` config).
+- **Over-the-air (OTA) update**: for JS/content-only changes (screens, data, styling, logic), set up [EAS Update](https://docs.expo.dev/eas-update/introduction/) (`eas update:configure`, then `eas update` after each change) — installed apps fetch the new JS bundle automatically next time they open, no reinstall needed.
 
 ## Before shipping
 
-- **Branding assets**: `assets/icon.png`, `assets/splash-icon.png`, `assets/android-icon-*.png`, and `assets/favicon.png` are currently Expo's default placeholders. Replace them with the real Explosher logo (the circular globe-and-food-icons mark) at the recommended Expo sizes.
 - **Google Maps API key**: the Map screen uses `react-native-maps`, which needs a Google Maps API key for Android in production. Add it to `app.json` under `expo.android.config.googleMaps.apiKey`.
 - **Backend**: hook up real destinations/tours/profile data and the WhatsApp/phone contact numbers to your production values in `src/data/`.
 
