@@ -37,6 +37,12 @@
           "imageWidth": 160
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "1a0a4ce2-458a-4fce-b055-ec7dd1fdc55e"
+      }
+    },
+    "owner": "mo9909s-team"
   }
 }
