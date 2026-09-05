@@ -1,7 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { colors, spacing, typography } from '../theme/theme';
+
+const LOAD_TIMEOUT_MS = 8000;
 
 export type MapMarker = {
   id: string;
@@ -73,6 +75,7 @@ function buildHtml(markers: MapMarker[]): string {
     function showError() {
       document.getElementById('map').style.display = 'none';
       document.getElementById('error').style.display = 'flex';
+      window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'failed' }));
     }
 
     window.addEventListener('error', showError);
@@ -120,13 +123,18 @@ function buildHtml(markers: MapMarker[]): string {
         // any resize to recover from that.
         setTimeout(function () { map.invalidateSize(); }, 300);
         window.addEventListener('resize', function () { map.invalidateSize(); });
+
+        // Tell the native side Leaflet actually initialized (as opposed to
+        // the WebView's static HTML merely finishing "load" before the
+        // CDN script even ran) so it can stop its own load-timeout guard.
+        window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'ready' }));
       }
     } catch (e) {
       showError();
     }
 
     function select(id) {
-      window.ReactNativeWebView.postMessage(id);
+      window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'select', id: id }));
     }
   </script>
 </body>
@@ -136,6 +144,15 @@ function buildHtml(markers: MapMarker[]): string {
 export default function LeafletMap({ markers, onMarkerPress }: Props) {
   const html = useMemo(() => buildHtml(markers), [markers]);
   const [loadFailed, setLoadFailed] = useState(false);
+  const readyRef = useRef(false);
+
+  useEffect(() => {
+    readyRef.current = false;
+    const timer = setTimeout(() => {
+      if (!readyRef.current) setLoadFailed(true);
+    }, LOAD_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, [html]);
 
   if (loadFailed) {
     return (
@@ -149,7 +166,21 @@ export default function LeafletMap({ markers, onMarkerPress }: Props) {
     <WebView
       source={{ html, baseUrl: 'https://explosher.app' }}
       style={styles.webview}
-      onMessage={(event) => onMarkerPress?.(event.nativeEvent.data)}
+      onMessage={(event) => {
+        let payload: { type?: string; id?: string } = {};
+        try {
+          payload = JSON.parse(event.nativeEvent.data);
+        } catch {
+          return;
+        }
+        if (payload.type === 'ready') {
+          readyRef.current = true;
+        } else if (payload.type === 'failed') {
+          setLoadFailed(true);
+        } else if (payload.type === 'select' && payload.id) {
+          onMarkerPress?.(payload.id);
+        }
+      }}
       onError={() => setLoadFailed(true)}
       onHttpError={() => setLoadFailed(true)}
       javaScriptEnabled
