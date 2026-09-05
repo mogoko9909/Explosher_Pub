@@ -1,7 +1,7 @@
-import React, { useMemo } from 'react';
-import { StyleSheet } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
-import { colors } from '../theme/theme';
+import { colors, spacing, typography } from '../theme/theme';
 
 export type MapMarker = {
   id: string;
@@ -23,10 +23,23 @@ function buildHtml(markers: MapMarker[]): string {
   return `<!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
-    html, body, #map { height: 100%; margin: 0; padding: 0; }
+    html, body, #map { height: 100%; width: 100%; margin: 0; padding: 0; }
+    #error {
+      display: none;
+      position: absolute;
+      inset: 0;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      font-family: -apple-system, Roboto, sans-serif;
+      color: #6B7280;
+      font-size: 14px;
+    }
     .marker-pin {
       background: ${colors.navy};
       width: 28px;
@@ -54,39 +67,62 @@ function buildHtml(markers: MapMarker[]): string {
 </head>
 <body>
   <div id="map"></div>
+  <div id="error">Couldn't load the map. Check your internet connection and try again.</div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    const markers = ${markersJson};
-    const map = L.map('map', { zoomControl: true, attributionControl: true });
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
+    function showError() {
+      document.getElementById('map').style.display = 'none';
+      document.getElementById('error').style.display = 'flex';
+    }
 
-    const icon = L.divIcon({
-      className: '',
-      html: '<div class="marker-pin"></div>',
-      iconSize: [28, 28],
-      iconAnchor: [14, 28],
-      popupAnchor: [0, -28],
-    });
+    window.addEventListener('error', showError);
 
-    const bounds = [];
-    markers.forEach((m) => {
-      const marker = L.marker([m.latitude, m.longitude], { icon }).addTo(map);
-      const popupHtml = '<div class="popup-title">' + m.title + '</div>' +
-        (m.subtitle ? '<div class="popup-subtitle">' + m.subtitle + '</div>' : '') +
-        '<a class="popup-link" href="#" onclick="select(\'' + m.id + '\'); return false;">View tour &rarr;</a>';
-      marker.bindPopup(popupHtml);
-      bounds.push([m.latitude, m.longitude]);
-    });
+    try {
+      if (typeof L === 'undefined') {
+        showError();
+      } else {
+        const markers = ${markersJson};
+        const map = L.map('map', { zoomControl: true, attributionControl: true });
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
 
-    if (bounds.length === 1) {
-      map.setView(bounds[0], 12);
-    } else if (bounds.length > 1) {
-      map.fitBounds(bounds, { padding: [40, 40] });
-    } else {
-      map.setView([20, 10], 2);
+        const icon = L.divIcon({
+          className: '',
+          html: '<div class="marker-pin"></div>',
+          iconSize: [28, 28],
+          iconAnchor: [14, 28],
+          popupAnchor: [0, -28],
+        });
+
+        const bounds = [];
+        markers.forEach((m) => {
+          const marker = L.marker([m.latitude, m.longitude], { icon }).addTo(map);
+          const popupHtml = '<div class="popup-title">' + m.title + '</div>' +
+            (m.subtitle ? '<div class="popup-subtitle">' + m.subtitle + '</div>' : '') +
+            '<a class="popup-link" href="#" onclick="select(\'' + m.id + '\'); return false;">View tour &rarr;</a>';
+          marker.bindPopup(popupHtml);
+          bounds.push([m.latitude, m.longitude]);
+        });
+
+        if (bounds.length === 1) {
+          map.setView(bounds[0], 12);
+        } else if (bounds.length > 1) {
+          map.fitBounds(bounds, { padding: [40, 40] });
+        } else {
+          map.setView([20, 10], 2);
+        }
+
+        // The WebView can report a zero-size container at the moment Leaflet
+        // initializes (before native layout settles), which renders a blank
+        // grey square with no error. Re-measure shortly after mount and on
+        // any resize to recover from that.
+        setTimeout(function () { map.invalidateSize(); }, 300);
+        window.addEventListener('resize', function () { map.invalidateSize(); });
+      }
+    } catch (e) {
+      showError();
     }
 
     function select(id) {
@@ -99,19 +135,33 @@ function buildHtml(markers: MapMarker[]): string {
 
 export default function LeafletMap({ markers, onMarkerPress }: Props) {
   const html = useMemo(() => buildHtml(markers), [markers]);
+  const [loadFailed, setLoadFailed] = useState(false);
+
+  if (loadFailed) {
+    return (
+      <View style={[styles.webview, styles.errorWrap]}>
+        <Text style={styles.errorText}>Couldn't load the map. Check your internet connection.</Text>
+      </View>
+    );
+  }
 
   return (
     <WebView
-      source={{ html }}
+      source={{ html, baseUrl: 'https://explosher.app' }}
       style={styles.webview}
       onMessage={(event) => onMarkerPress?.(event.nativeEvent.data)}
+      onError={() => setLoadFailed(true)}
+      onHttpError={() => setLoadFailed(true)}
       javaScriptEnabled
       domStorageEnabled
       originWhitelist={['*']}
+      mixedContentMode="always"
     />
   );
 }
 
 const styles = StyleSheet.create({
   webview: { flex: 1, backgroundColor: colors.pillBg },
+  errorWrap: { alignItems: 'center', justifyContent: 'center', padding: spacing.lg },
+  errorText: { ...typography.body, color: colors.textMuted, textAlign: 'center' },
 });
